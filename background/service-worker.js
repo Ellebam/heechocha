@@ -1,261 +1,113 @@
 /**
- * Background Service Worker
- * Handles tab creation, model selection, and cross-component messaging
+ * Claude Controller (Model Selection + Prompt Injection)
  */
 
-import { getStorage, getSettings, getDefaultGeminiAccountIndex } from '../lib/storage.js';
-import { buildClaudeUrl, buildGeminiUrl } from '../lib/url-builder.js';
+(function() {
+  'use strict';
 
-// Track pending model selections
-const pendingModelSelections = new Map();
-
-// Listen for messages from popup
-chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  if (message.action === 'launchChats') {
-    handleLaunchChats(message.data)
-      .then(result => sendResponse(result))
-      .catch(error => sendResponse({ success: false, error: error.message }));
-    return true; // Keep channel open for async response
-  }
-  
-  if (message.action === 'copyToClipboard') {
-    handleCopyToClipboard(message.text)
-      .then(result => sendResponse(result))
-      .catch(error => sendResponse({ success: false, error: error.message }));
-    return true;
-  }
-
-  if (message.action === 'getModelSelectionStatus') {
-    sendResponse({ pending: pendingModelSelections.size });
-    return false;
-  }
-});
-
-/**
- * Handle launching chat tabs
- */
-async function handleLaunchChats(data) {
-  const { 
-    prompt, 
-    claudeEnabled, 
-    geminiEnabled, 
-    claudeProjectId, 
-    geminiGemId, 
-    geminiAccountIndex,
-    claudeModel,
-    geminiModel 
-  } = data;
-  
-  const results = {
-    success: true,
-    tabsOpened: [],
-    modelSelections: [],
-    errors: []
-  };
-  
-  const { preferences } = await getStorage();
-  const tabIds = [];
-  
-  try {
-    // Open Claude tab if enabled
-    if (claudeEnabled) {
-      const claudeUrl = buildClaudeUrl(claudeProjectId);
-      const claudeTab = await chrome.tabs.create({ 
-        url: claudeUrl,
-        active: false 
-      });
-      tabIds.push(claudeTab.id);
-      results.tabsOpened.push({ 
-        service: 'claude', 
-        url: claudeUrl, 
-        tabId: claudeTab.id 
-      });
-
-      // Queue model selection for Claude
-      if (claudeModel) {
-        queueModelSelection(claudeTab.id, 'claude', claudeModel, results);
-      }
-    }
-    
-    // Open Gemini tab if enabled
-    if (geminiEnabled) {
-      // Get account index from gem or default
-      let accountIdx = geminiAccountIndex;
-      if (accountIdx === null || accountIdx === undefined) {
-        accountIdx = await getDefaultGeminiAccountIndex();
-      }
-      
-      const geminiUrl = buildGeminiUrl(geminiGemId, accountIdx);
-      const geminiTab = await chrome.tabs.create({ 
-        url: geminiUrl,
-        active: false 
-      });
-      tabIds.push(geminiTab.id);
-      results.tabsOpened.push({ 
-        service: 'gemini', 
-        url: geminiUrl, 
-        tabId: geminiTab.id 
-      });
-
-      // Queue model selection for Gemini
-      if (geminiModel) {
-        queueModelSelection(geminiTab.id, 'gemini', geminiModel, results);
-      }
-    }
-    
-    // Group tabs if preference is set and we have multiple tabs
-    if (preferences.groupTabs && tabIds.length > 1) {
-      try {
-        const group = await chrome.tabs.group({ tabIds });
-        await chrome.tabGroups.update(group, { 
-          title: 'AI Compare',
-          color: 'purple'
-        });
-      } catch (groupError) {
-        // Tab grouping might not be available in all contexts, continue anyway
-        console.warn('Tab grouping failed:', groupError);
-      }
-    }
-    
-    // Activate the first tab
-    if (tabIds.length > 0) {
-      await chrome.tabs.update(tabIds[0], { active: true });
-    }
-    
-  } catch (error) {
-    results.success = false;
-    results.errors.push(error.message);
-  }
-  
-  return results;
-}
-
-/**
- * Queue model selection for a tab
- * This waits for the tab to load, then sends a message to the content script
- */
-function queueModelSelection(tabId, service, modelId, results) {
-  const selectionId = `${tabId}-${service}`;
-  
-  pendingModelSelections.set(selectionId, {
-    tabId,
-    service,
-    modelId,
-    status: 'pending'
-  });
-
-  // Listen for tab to finish loading
-  const listener = async (updatedTabId, changeInfo, tab) => {
-    if (updatedTabId !== tabId) return;
-    
-    if (changeInfo.status === 'complete') {
-      // Remove listener
-      chrome.tabs.onUpdated.removeListener(listener);
-      
-      // Wait a bit for SPA to initialize
-      await sleep(1500);
-      
-      // Send message to content script
-      try {
-        const response = await chrome.tabs.sendMessage(tabId, {
-          action: 'selectModel',
-          service: service,
-          modelId: modelId
-        });
-        
-        results.modelSelections.push({
-          service,
-          modelId,
-          success: response?.success || false,
-          error: response?.error || null
-        });
-
-        pendingModelSelections.set(selectionId, {
-          ...pendingModelSelections.get(selectionId),
-          status: response?.success ? 'success' : 'failed',
-          error: response?.error
-        });
-
-        // Notify any open popups about the result
-        notifyModelSelectionResult(service, modelId, response);
-        
-      } catch (error) {
-        console.error(`[DualAI] Failed to send model selection message to ${service}:`, error);
-        
-        results.modelSelections.push({
-          service,
-          modelId,
-          success: false,
-          error: error.message
-        });
-
-        pendingModelSelections.set(selectionId, {
-          ...pendingModelSelections.get(selectionId),
-          status: 'failed',
-          error: error.message
-        });
-
-        notifyModelSelectionResult(service, modelId, { success: false, error: error.message });
-      }
-
-      // Clean up after a delay
-      setTimeout(() => {
-        pendingModelSelections.delete(selectionId);
-      }, 30000);
-    }
+  const MODEL_MAPPING = {
+    'opus-4.5': ['Opus', '3.5 Opus'], // Fallback keywords
+    'sonnet-4.5': ['Sonnet', '3.5 Sonnet'],
+    'haiku-4.5': ['Haiku', '3 Haiku']
   };
 
-  chrome.tabs.onUpdated.addListener(listener);
+  chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    if (message.service !== 'claude') return;
 
-  // Timeout fallback - if tab never completes loading
-  setTimeout(() => {
-    chrome.tabs.onUpdated.removeListener(listener);
-    if (pendingModelSelections.get(selectionId)?.status === 'pending') {
-      pendingModelSelections.set(selectionId, {
-        ...pendingModelSelections.get(selectionId),
-        status: 'timeout',
-        error: 'Tab load timeout'
-      });
-      notifyModelSelectionResult(service, modelId, { 
-        success: false, 
-        error: 'Tab load timeout' 
-      });
+    if (message.action === 'selectModel') {
+      selectModel(message.modelId)
+        .then(res => sendResponse(res))
+        .catch(err => sendResponse({ success: false, error: err.message }));
+      return true;
     }
-  }, 30000);
-}
-
-/**
- * Notify popup about model selection result
- */
-function notifyModelSelectionResult(service, modelId, result) {
-  chrome.runtime.sendMessage({
-    action: 'modelSelectionResult',
-    service,
-    modelId,
-    success: result.success,
-    error: result.error
-  }).catch(() => {
-    // Popup might be closed, that's fine
+    
+    if (message.action === 'insertPrompt') {
+      insertPrompt(message.prompt)
+        .then(res => sendResponse(res))
+        .catch(err => sendResponse({ success: false, error: err.message }));
+      return true;
+    }
   });
-}
 
-/**
- * Handle copying text to clipboard
- */
-async function handleCopyToClipboard(text) {
-  try {
+  async function selectModel(modelId) {
+    const keywords = MODEL_MAPPING[modelId];
+    if (!keywords) return { success: true }; // Unknown model, skip
+
+    // 1. Find the trigger button. 
+    // It usually displays the current model name or text like "Model"
+    const triggers = Array.from(document.querySelectorAll('button, [role="button"]'))
+      .filter(b => {
+        const txt = b.textContent.toLowerCase();
+        // Avoid the "New Chat" button or "Subscribe" buttons
+        return (txt.includes('sonnet') || txt.includes('opus') || txt.includes('haiku') || txt.includes('model'));
+      });
+
+    // Strategy: If we find a button that already says our model name, we are done.
+    const alreadySelected = triggers.find(t => keywords.some(k => t.textContent.includes(k)));
+    if (alreadySelected) return { success: true, message: 'Already selected' };
+
+    // Otherwise, click the most likely model selector (usually the one in the chat controls)
+    // Filter for buttons near the top or specifically styled
+    const selectorBtn = document.querySelector('[data-testid="model-selector-dropdown"]') || triggers[0];
+    
+    if (!selectorBtn) throw new Error('Could not find model selector');
+    
+    selectorBtn.click();
+    await sleep(500);
+
+    // 2. Find option in menu
+    const options = Array.from(document.querySelectorAll('[role="menuitem"], [role="option"], button'));
+    const targetOption = options.find(opt => 
+      keywords.some(k => opt.textContent.includes(k)) && 
+      !opt.textContent.includes('Upgrade') // Avoid upsell buttons
+    );
+
+    if (targetOption) {
+      targetOption.click();
+      return { success: true };
+    }
+    
+    // Close menu if failed
+    document.body.click();
+    throw new Error(`Model option for ${modelId} not found`);
+  }
+
+  async function insertPrompt(text) {
+    // Claude uses a contenteditable div with a <p> inside
+    const inputArea = document.querySelector('[contenteditable="true"]');
+    if (!inputArea) throw new Error('Chat input not found');
+
+    // Focus first
+    inputArea.focus();
+    
+    // Clear existing (usually just a <p><br></p>)
+    inputArea.innerHTML = '';
+    
+    // Create paragraph structure
+    const p = document.createElement('p');
+    p.textContent = text;
+    inputArea.appendChild(p);
+
+    // Dispatch events to trigger React state updates
+    const events = ['input', 'change'];
+    events.forEach(eventType => {
+        const e = new Event(eventType, { bubbles: true, cancelable: true });
+        inputArea.dispatchEvent(e);
+    });
+
+    // Move cursor to end
+    const range = document.createRange();
+    const sel = window.getSelection();
+    range.selectNodeContents(inputArea);
+    range.collapse(false);
+    sel.removeAllRanges();
+    sel.addRange(range);
+
     return { success: true };
-  } catch (error) {
-    return { success: false, error: error.message };
   }
-}
 
-/**
- * Sleep utility
- */
-function sleep(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
+  function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+})();
 
 // Extension installation handler
 chrome.runtime.onInstalled.addListener((details) => {

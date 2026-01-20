@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dual AI Chat Launcher</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="app">
+    <!-- Header -->
+    <header class="header">
+      <div class="header-title">
+        <span class="header-icon">⚡</span>
+        <h1>Dual AI Launcher</h1>
+      </div>
+      <button class="btn-icon" id="settingsBtn" aria-label="Settings">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="3"></circle>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+        </svg>
+      </button>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Prompt Input -->
+      <section class="prompt-section">
+        <label for="promptInput" class="label">Your Prompt</label>
+        <textarea 
+          id="promptInput" 
+          class="prompt-input" 
+          placeholder="Enter your prompt here... (Ctrl+Enter to launch)"
+          rows="6"
+        ></textarea>
+      </section>
+
+      <!-- File Reference -->
+      <section class="file-section">
+        <label for="fileReference" class="label">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path>
+          </svg>
+          Files to attach (reminder)
+        </label>
+        <input 
+          type="text" 
+          id="fileReference" 
+          class="file-input" 
+          placeholder="e.g., report.pdf, screenshot.png"
+        >
+      </section>
+
+      <!-- Service Cards -->
+      <section class="services-section">
+        <!-- Claude Card -->
+        <div class="service-card" id="claudeCard">
+          <div class="service-header">
+            <label class="service-toggle">
+              <input type="checkbox" id="claudeEnabled" checked>
+              <span class="toggle-slider"></span>
+            </label>
+            <div class="service-info">
+              <span class="service-name claude-accent">Claude</span>
+            </div>
+          </div>
+          <div class="service-options">
+            <div class="select-group">
+              <label for="claudeProject" class="select-label">Project</label>
+              <select id="claudeProject" class="select">
+                <option value="">No project (new chat)</option>
+              </select>
+              <button class="btn-add" id="addClaudeProject" title="Add project">+</button>
+            </div>
+            <div class="select-group">
+              <label for="claudeModel" class="select-label">Model</label>
+              <select id="claudeModel" class="select">
+                <option value="opus-4.5">Opus 4.5</option>
+                <option value="sonnet-4.5" selected>Sonnet 4.5</option>
+                <option value="haiku-4.5">Haiku 4.5</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Gemini Card -->
+        <div class="service-card" id="geminiCard">
+          <div class="service-header">
+            <label class="service-toggle">
+              <input type="checkbox" id="geminiEnabled" checked>
+              <span class="toggle-slider"></span>
+            </label>
+            <div class="service-info">
+              <span class="service-name gemini-accent">Gemini</span>
+            </div>
+          </div>
+          <div class="service-options">
+            <div class="select-group">
+              <label for="geminiGem" class="select-label">Gem</label>
+              <select id="geminiGem" class="select">
+                <option value="">No gem (new chat)</option>
+              </select>
+              <button class="btn-add" id="addGeminiGem" title="Add gem">+</button>
+            </div>
+            <div class="select-group">
+              <label for="geminiModel" class="select-label">Model</label>
+              <select id="geminiModel" class="select">
+                <option value="fast">Fast</option>
+                <option value="thinking" selected>Thinking</option>
+                <option value="pro">Pro</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Footer / Actions -->
+    <footer class="footer">
+      <button class="btn-launch" id="launchBtn">
+        <span class="btn-text">🚀 Launch Chats</span>
+        <span class="btn-loading" hidden>
+          <svg class="spinner" width="20" height="20" viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" fill="none" opacity="0.3"></circle>
+            <path d="M12 2a10 10 0 0 1 10 10" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round"></path>
+          </svg>
+          Opening...
+        </span>
+        <span class="btn-success" hidden>✓ Done!</span>
+      </button>
+      <div class="status" id="status"></div>
+    </footer>
+
+    <!-- Settings Panel (Slide-out) -->
+    <div class="settings-panel" id="settingsPanel" hidden>
+      <div class="settings-header">
+        <h2>Settings</h2>
+        <button class="btn-icon" id="closeSettings" aria-label="Close settings">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+      
+      <div class="settings-content">
+        <!-- Claude Projects -->
+        <section class="settings-section">
+          <h3 class="claude-accent">Claude Projects</h3>
+          <div class="config-list" id="claudeProjectsList"></div>
+          <button class="btn-secondary" id="addClaudeProjectSettings">+ Add Project</button>
+        </section>
+
+        <!-- Gemini Gems -->
+        <section class="settings-section">
+          <h3 class="gemini-accent">Gemini Gems</h3>
+          <div class="config-list" id="geminiGemsList"></div>
+          <button class="btn-secondary" id="addGeminiGemSettings">+ Add Gem</button>
+        </section>
+
+        <!-- Preferences -->
+        <section class="settings-section">
+          <h3>Preferences</h3>
+          <label class="checkbox-label">
+            <input type="checkbox" id="prefAutoClose">
+            <span>Auto-close popup after launch</span>
+          </label>
+          <label class="checkbox-label">
+            <input type="checkbox" id="prefGroupTabs" checked>
+            <span>Group opened tabs together</span>
+          </label>
+          <label class="checkbox-label">
+            <input type="checkbox" id="prefRememberPrompt">
+            <span>Remember last prompt</span>
+          </label>
+        </section>
+      </div>
+    </div>
+
+    <!-- DOM Inspector -->
+    <section class="settings-section dev-tools">
+      <h3>🔍 Developer Tools</h3>
+      <p class="hint">Inspect AI chat interfaces to identify selectors for model dropdowns, inputs, etc.</p>
+      <button class="btn-secondary" id="inspectPageBtn">🔍 Inspect Active AI Tab</button>
+      <button class="btn-secondary" id="inspectWithMenuBtn">🔍 Inspect (with dropdown open)</button>
+    </section>
+
+    <!-- Add/Edit Modal -->
+    <div class="modal-overlay" id="modalOverlay" hidden>
+      <div class="modal">
+        <div class="modal-header">
+          <h3 id="modalTitle">Add Configuration</h3>
+          <button class="btn-icon" id="closeModal" aria-label="Close">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+        </div>
+        <div class="modal-content">
+          <div class="form-group">
+            <label for="configName">Display Name</label>
+            <input type="text" id="configName" placeholder="e.g., Enterprise Architecture">
+          </div>
+          <div class="form-group">
+            <label for="configUrl">Paste URL from browser</label>
+            <input type="text" id="configUrl" placeholder="https://claude.ai/project/... or https://gemini.google.com/u/.../gem/...">
+            <small class="hint" id="urlHint">Open your project/gem and copy the URL from the address bar</small>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn-secondary" id="cancelModal">Cancel</button>
+          <button class="btn-primary" id="saveModal">Save</button>
+        </div>
+      </div>
+    </div>
+    <!-- Inspector Results Modal -->
+    <div class="modal-overlay" id="inspectorModalOverlay" hidden>
+      <div class="modal inspector-modal">
+        <div class="modal-header">
+          <h3>DOM Inspection Results</h3>
+          <button class="btn-icon" id="closeInspectorModal" aria-label="Close">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+        </div>
+        <div class="modal-content">
+          <div class="inspector-summary" id="inspectorSummary"></div>
+          <div class="inspector-results">
+            <textarea id="inspectorOutput" readonly rows="12" placeholder="Results will appear here..."></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn-secondary" id="copyInspectorJson">📋 Copy JSON</button>
+          <button class="btn-primary" id="copyWithPrompt">📋 Copy with AI Prompt</button>
+        </div>
+      </div>
+    </div>
+    <!-- Onboarding Tooltip -->
+    <div class="tooltip" id="onboardingTooltip" hidden>
+      <div class="tooltip-content">
+        <p><strong>Welcome!</strong> Add your Claude projects and Gemini gems in Settings to get started.</p>
+        <button class="btn-small" id="dismissTooltip">Got it</button>
+      </div>
+      <div class="tooltip-arrow"></div>
+    </div>
+  </div>
+
+  <script src="popup.js" type="module"></script>
+</body>
+</html>

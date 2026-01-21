@@ -15,7 +15,7 @@
 
 ---
 
-<img src="assets/demo.gif" alt="heechocha Demo" width="600">
+<img src="assets/repo-hero.png" alt="heechocha Hero" width="600">
 
 *One prompt, multiple AI backends, side-by-side comparison*
 

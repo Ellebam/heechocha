@@ -34,27 +34,30 @@ const elements = {
   // Prompt
   promptInput: document.getElementById('promptInput'),
   fileReference: document.getElementById('fileReference'),
-  
+
   // Service toggles
   claudeEnabled: document.getElementById('claudeEnabled'),
   geminiEnabled: document.getElementById('geminiEnabled'),
+  chatgptEnabled: document.getElementById('chatgptEnabled'),
   claudeCard: document.getElementById('claudeCard'),
   geminiCard: document.getElementById('geminiCard'),
-  
+  chatgptCard: document.getElementById('chatgptCard'),
+
   // Dropdowns
   claudeProject: document.getElementById('claudeProject'),
   claudeModel: document.getElementById('claudeModel'),
   geminiGem: document.getElementById('geminiGem'),
   geminiModel: document.getElementById('geminiModel'),
-  
+  chatgptModel: document.getElementById('chatgptModel'),
+
   // Add buttons
   addClaudeProject: document.getElementById('addClaudeProject'),
   addGeminiGem: document.getElementById('addGeminiGem'),
-  
+
   // Launch
   launchBtn: document.getElementById('launchBtn'),
   status: document.getElementById('status'),
-  
+
   // Settings
   settingsBtn: document.getElementById('settingsBtn'),
   settingsPanel: document.getElementById('settingsPanel'),
@@ -63,12 +66,12 @@ const elements = {
   geminiGemsList: document.getElementById('geminiGemsList'),
   addClaudeProjectSettings: document.getElementById('addClaudeProjectSettings'),
   addGeminiGemSettings: document.getElementById('addGeminiGemSettings'),
-  
+
   // Preferences
   prefAutoClose: document.getElementById('prefAutoClose'),
   prefGroupTabs: document.getElementById('prefGroupTabs'),
   prefRememberPrompt: document.getElementById('prefRememberPrompt'),
-  
+
   // Modal
   modalOverlay: document.getElementById('modalOverlay'),
   modalTitle: document.getElementById('modalTitle'),
@@ -78,7 +81,7 @@ const elements = {
   saveModal: document.getElementById('saveModal'),
   cancelModal: document.getElementById('cancelModal'),
   closeModal: document.getElementById('closeModal'),
-  
+
   // Inspector
   inspectPageBtn: document.getElementById('inspectPageBtn'),
   inspectWithMenuBtn: document.getElementById('inspectWithMenuBtn'),
@@ -115,15 +118,18 @@ async function init() {
 
 async function loadSettings() {
   const settings = await getSettings();
-  
+
   elements.claudeEnabled.checked = settings.claudeEnabled;
   elements.geminiEnabled.checked = settings.geminiEnabled;
+  elements.chatgptEnabled.checked = settings.chatgptEnabled;
   elements.claudeModel.value = settings.claudeModel;
   elements.geminiModel.value = settings.geminiModel;
-  
+  elements.chatgptModel.value = settings.chatgptModel;
+
   updateCardState('claude', settings.claudeEnabled);
   updateCardState('gemini', settings.geminiEnabled);
-  
+  updateCardState('chatgpt', settings.chatgptEnabled);
+
   // Restore last prompt if preference is set
   const prefs = await getPreferences();
   if (prefs.rememberLastPrompt && settings.lastPrompt) {
@@ -134,10 +140,10 @@ async function loadSettings() {
 async function loadProjects() {
   const projects = await getClaudeProjects();
   const settings = await getSettings();
-  
+
   // Clear and rebuild dropdown
   elements.claudeProject.innerHTML = '<option value="">No project (new chat)</option>';
-  
+
   projects.forEach(project => {
     const option = document.createElement('option');
     option.value = project.id;
@@ -147,12 +153,12 @@ async function loadProjects() {
     }
     elements.claudeProject.appendChild(option);
   });
-  
+
   // Restore selection
   if (settings.selectedClaudeProjectId) {
     elements.claudeProject.value = settings.selectedClaudeProjectId;
   }
-  
+
   // Update settings list
   renderProjectsList(projects);
 }
@@ -160,10 +166,10 @@ async function loadProjects() {
 async function loadGems() {
   const gems = await getGeminiGems();
   const settings = await getSettings();
-  
+
   // Clear and rebuild dropdown
   elements.geminiGem.innerHTML = '<option value="">No gem (new chat)</option>';
-  
+
   gems.forEach(gem => {
     const option = document.createElement('option');
     option.value = gem.id;
@@ -173,12 +179,12 @@ async function loadGems() {
     }
     elements.geminiGem.appendChild(option);
   });
-  
+
   // Restore selection
   if (settings.selectedGeminiGemId) {
     elements.geminiGem.value = settings.selectedGeminiGemId;
   }
-  
+
   // Update settings list
   renderGemsList(gems);
 }
@@ -194,7 +200,7 @@ async function checkOnboarding() {
   const prefs = await getPreferences();
   const projects = await getClaudeProjects();
   const gems = await getGeminiGems();
-  
+
   // Show onboarding if no configs and not dismissed
   if (!prefs.onboardingComplete && projects.length === 0 && gems.length === 0) {
     elements.onboardingTooltip.hidden = false;
@@ -206,22 +212,24 @@ function setupEventListeners() {
   // Service toggles
   elements.claudeEnabled.addEventListener('change', handleClaudeToggle);
   elements.geminiEnabled.addEventListener('change', handleGeminiToggle);
-  
+  elements.chatgptEnabled.addEventListener('change', handleChatgptToggle);
+
   // Dropdown changes
   elements.claudeProject.addEventListener('change', handleClaudeProjectChange);
   elements.claudeModel.addEventListener('change', handleClaudeModelChange);
   elements.geminiGem.addEventListener('change', handleGeminiGemChange);
   elements.geminiModel.addEventListener('change', handleGeminiModelChange);
-  
+  elements.chatgptModel.addEventListener('change', handleChatgptModelChange);
+
   // Add buttons
   elements.addClaudeProject.addEventListener('click', () => openModal('claude'));
   elements.addGeminiGem.addEventListener('click', () => openModal('gemini'));
   elements.addClaudeProjectSettings.addEventListener('click', () => openModal('claude'));
   elements.addGeminiGemSettings.addEventListener('click', () => openModal('gemini'));
-  
+
   // Launch button
   elements.launchBtn.addEventListener('click', handleLaunch);
-  
+
   // Keyboard shortcut
   elements.promptInput.addEventListener('keydown', (e) => {
     if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
@@ -229,16 +237,16 @@ function setupEventListeners() {
       handleLaunch();
     }
   });
-  
+
   // Settings panel
   elements.settingsBtn.addEventListener('click', openSettings);
   elements.closeSettings.addEventListener('click', closeSettings);
-  
+
   // Preferences
   elements.prefAutoClose.addEventListener('change', handlePrefChange);
   elements.prefGroupTabs.addEventListener('change', handlePrefChange);
   elements.prefRememberPrompt.addEventListener('change', handlePrefChange);
-  
+
   // Modal
   elements.saveModal.addEventListener('click', handleModalSave);
   elements.cancelModal.addEventListener('click', closeModal);
@@ -246,10 +254,10 @@ function setupEventListeners() {
   elements.modalOverlay.addEventListener('click', (e) => {
     if (e.target === elements.modalOverlay) closeModal();
   });
-  
+
   // URL input validation
   elements.configUrl.addEventListener('input', handleUrlInput);
-  
+
   // Inspector
   elements.inspectPageBtn.addEventListener('click', () => runInspector(false));
   elements.inspectWithMenuBtn.addEventListener('click', () => runInspector(true));
@@ -279,17 +287,31 @@ async function handleGeminiToggle(e) {
   updateLaunchButtonState();
 }
 
+async function handleChatgptToggle(e) {
+  const enabled = e.target.checked;
+  await updateSettings({ chatgptEnabled: enabled });
+  updateCardState('chatgpt', enabled);
+  updateLaunchButtonState();
+}
+
 function updateCardState(service, enabled) {
-  const card = service === 'claude' ? elements.claudeCard : elements.geminiCard;
-  card.classList.toggle('disabled', !enabled);
+  let card;
+  if (service === 'claude') card = elements.claudeCard;
+  else if (service === 'gemini') card = elements.geminiCard;
+  else if (service === 'chatgpt') card = elements.chatgptCard;
+
+  if (card) {
+    card.classList.toggle('disabled', !enabled);
+  }
 }
 
 function updateLaunchButtonState() {
   const claudeEnabled = elements.claudeEnabled.checked;
   const geminiEnabled = elements.geminiEnabled.checked;
+  const chatgptEnabled = elements.chatgptEnabled.checked;
   const hasPrompt = elements.promptInput.value.trim().length > 0;
-  
-  elements.launchBtn.disabled = !hasPrompt || (!claudeEnabled && !geminiEnabled);
+
+  elements.launchBtn.disabled = !hasPrompt || (!claudeEnabled && !geminiEnabled && !chatgptEnabled);
 }
 
 // Watch prompt input for button state
@@ -310,6 +332,10 @@ async function handleGeminiGemChange(e) {
 
 async function handleGeminiModelChange(e) {
   await updateSettings({ geminiModel: e.target.value });
+}
+
+async function handleChatgptModelChange(e) {
+  await updateSettings({ chatgptModel: e.target.value });
 }
 
 // ============ Settings Panel ============
@@ -336,17 +362,17 @@ async function handlePrefChange() {
 function openModal(type) {
   modalState.type = type;
   modalState.mode = 'add';
-  
+
   const isClaud = type === 'claude';
   elements.modalTitle.textContent = isClaud ? 'Add Claude Project' : 'Add Gemini Gem';
   elements.configName.value = '';
   elements.configUrl.value = '';
-  elements.configUrl.placeholder = isClaud 
+  elements.configUrl.placeholder = isClaud
     ? 'https://claude.ai/project/...'
     : 'https://gemini.google.com/u/.../gem/...';
   elements.urlHint.textContent = 'Open your project/gem and copy the URL from the address bar';
   elements.urlHint.classList.remove('error');
-  
+
   elements.modalOverlay.hidden = false;
   elements.configName.focus();
 }
@@ -359,13 +385,13 @@ function closeModal() {
 function handleUrlInput() {
   const url = elements.configUrl.value.trim();
   const isClaud = modalState.type === 'claude';
-  
+
   if (!url) {
     elements.urlHint.textContent = 'Open your project/gem and copy the URL from the address bar';
     elements.urlHint.classList.remove('error');
     return;
   }
-  
+
   if (isClaud) {
     if (isValidClaudeProjectUrl(url)) {
       elements.urlHint.textContent = '✓ Valid Claude project URL';
@@ -389,19 +415,19 @@ function handleUrlInput() {
 async function handleModalSave() {
   const name = elements.configName.value.trim();
   const url = elements.configUrl.value.trim();
-  
+
   if (!name) {
     elements.configName.focus();
     return;
   }
-  
+
   if (!url) {
     elements.configUrl.focus();
     return;
   }
-  
+
   const isClaud = modalState.type === 'claude';
-  
+
   if (isClaud) {
     const parsed = parseClaudeUrl(url);
     if (!parsed) {
@@ -409,12 +435,12 @@ async function handleModalSave() {
       elements.urlHint.classList.add('error');
       return;
     }
-    
+
     await addClaudeProject({
       name,
       projectId: parsed.projectId
     });
-    
+
     await loadProjects();
   } else {
     const parsed = parseGeminiUrl(url);
@@ -423,16 +449,16 @@ async function handleModalSave() {
       elements.urlHint.classList.add('error');
       return;
     }
-    
+
     await addGeminiGem({
       name,
       gemId: parsed.gemId,
       accountIndex: parsed.accountIndex
     });
-    
+
     await loadGems();
   }
-  
+
   closeModal();
   showStatus('Configuration saved!', 'success');
 }
@@ -443,7 +469,7 @@ function renderProjectsList(projects) {
     elements.claudeProjectsList.innerHTML = '<div class="empty-state">No projects added yet</div>';
     return;
   }
-  
+
   elements.claudeProjectsList.innerHTML = projects.map(project => `
     <div class="config-item" data-id="${project.id}">
       <span class="config-name">${escapeHtml(project.name)}</span>
@@ -456,7 +482,7 @@ function renderProjectsList(projects) {
       </button>
     </div>
   `).join('');
-  
+
   // Add delete handlers
   elements.claudeProjectsList.querySelectorAll('[data-action="delete-claude"]').forEach(btn => {
     btn.addEventListener('click', async (e) => {
@@ -473,7 +499,7 @@ function renderGemsList(gems) {
     elements.geminiGemsList.innerHTML = '<div class="empty-state">No gems added yet</div>';
     return;
   }
-  
+
   elements.geminiGemsList.innerHTML = gems.map(gem => `
     <div class="config-item" data-id="${gem.id}">
       <span class="config-name">${escapeHtml(gem.name)}</span>
@@ -486,7 +512,7 @@ function renderGemsList(gems) {
       </button>
     </div>
   `).join('');
-  
+
   // Add delete handlers
   elements.geminiGemsList.querySelectorAll('[data-action="delete-gemini"]').forEach(btn => {
     btn.addEventListener('click', async (e) => {
@@ -501,28 +527,30 @@ function renderGemsList(gems) {
 // ============ Launch ============
 async function handleLaunch() {
   const prompt = elements.promptInput.value.trim();
-  
+
   if (!prompt) {
     showStatus('Please enter a prompt', 'error');
     return;
   }
-  
+
   const claudeEnabled = elements.claudeEnabled.checked;
   const geminiEnabled = elements.geminiEnabled.checked;
-  
-  if (!claudeEnabled && !geminiEnabled) {
+  const chatgptEnabled = elements.chatgptEnabled.checked;
+
+  if (!claudeEnabled && !geminiEnabled && !chatgptEnabled) {
     showStatus('Enable at least one service', 'error');
     return;
   }
-  
+
   // Get selected configurations
   const claudeProjectId = elements.claudeProject.value || null;
   const geminiGemId = elements.geminiGem.value || null;
-  
+
   // Get model selections
   const claudeModel = elements.claudeModel.value;
   const geminiModel = elements.geminiModel.value;
-  
+  const chatgptModel = elements.chatgptModel.value;
+
   // Get account index for Gemini
   let geminiAccountIndex = null;
   if (geminiEnabled) {
@@ -536,21 +564,22 @@ async function handleLaunch() {
       geminiAccountIndex = await getDefaultGeminiAccountIndex();
     }
   }
-  
+
   // Update button state
   elements.launchBtn.classList.add('loading');
   elements.launchBtn.disabled = true;
-  
+
   // Track model selection status for display
   const modelStatus = {
     claude: claudeEnabled ? 'pending' : null,
-    gemini: geminiEnabled ? 'pending' : null
+    gemini: geminiEnabled ? 'pending' : null,
+    chatgpt: chatgptEnabled ? 'pending' : null
   };
-  
+
   try {
     // Copy to clipboard
     await navigator.clipboard.writeText(prompt);
-    
+
     // Get project/gem IDs (not internal IDs)
     let claudeProjectIdForUrl = null;
     if (claudeProjectId) {
@@ -560,7 +589,7 @@ async function handleLaunch() {
         claudeProjectIdForUrl = project.projectId;
       }
     }
-    
+
     let geminiGemIdForUrl = null;
     if (geminiGemId) {
       const gems = await getGeminiGems();
@@ -569,7 +598,7 @@ async function handleLaunch() {
         geminiGemIdForUrl = gem.gemId;
       }
     }
-    
+
     // Send message to background to open tabs
     const result = await chrome.runtime.sendMessage({
       action: 'launchChats',
@@ -577,35 +606,37 @@ async function handleLaunch() {
         prompt,
         claudeEnabled,
         geminiEnabled,
+        chatgptEnabled,
         claudeProjectId: claudeProjectIdForUrl,
         geminiGemId: geminiGemIdForUrl,
         geminiAccountIndex,
         claudeModel,
-        geminiModel
+        geminiModel,
+        chatgptModel
       }
     });
-    
+
     if (result.success) {
       elements.launchBtn.classList.remove('loading');
       elements.launchBtn.classList.add('success');
-      
+
       const tabCount = result.tabsOpened.length;
       showStatus(`Copied! Opened ${tabCount} tab${tabCount > 1 ? 's' : ''} — paste with Ctrl+V`, 'success');
-      
+
       // Show model selection pending status
       showModelSelectionStatus(modelStatus);
-      
+
       // Save prompt if preference is set
       const prefs = await getPreferences();
       if (prefs.rememberLastPrompt) {
         await updateSettings({ lastPrompt: prompt });
       }
-      
+
       // Auto-close if preference is set (with delay for model selection feedback)
       if (prefs.autoClosePopup) {
         setTimeout(() => window.close(), 3000);
       }
-      
+
       // Reset button after delay
       setTimeout(() => {
         elements.launchBtn.classList.remove('success');
@@ -614,7 +645,7 @@ async function handleLaunch() {
     } else {
       throw new Error(result.errors?.join(', ') || 'Unknown error');
     }
-    
+
   } catch (error) {
     console.error('Launch failed:', error);
     elements.launchBtn.classList.remove('loading');
@@ -630,9 +661,10 @@ function showModelSelectionStatus(modelStatus) {
   const services = [];
   if (modelStatus.claude) services.push('Claude');
   if (modelStatus.gemini) services.push('Gemini');
-  
+  if (modelStatus.chatgpt) services.push('ChatGPT');
+
   if (services.length === 0) return;
-  
+
   // Update status to show model selection is happening
   setTimeout(() => {
     const currentStatus = elements.status.textContent;
@@ -647,7 +679,7 @@ function showModelSelectionStatus(modelStatus) {
  */
 function handleModelSelectionResult(message) {
   const { service, success, error } = message;
-  
+
   // Find or create the model status element
   let modelStatusEl = elements.status.querySelector('.model-status');
   if (!modelStatusEl) {
@@ -656,16 +688,16 @@ function handleModelSelectionResult(message) {
     elements.status.appendChild(document.createElement('br'));
     elements.status.appendChild(modelStatusEl);
   }
-  
+
   // Update the status
   const currentText = modelStatusEl.textContent || '';
   const serviceDisplay = service.charAt(0).toUpperCase() + service.slice(1);
-  
+
   if (success) {
-    modelStatusEl.innerHTML = currentText.replace('⏳ Setting models...', '') + 
+    modelStatusEl.innerHTML = currentText.replace('⏳ Setting models...', '') +
       `<span class="model-success">✓ ${serviceDisplay} model set</span> `;
   } else {
-    modelStatusEl.innerHTML = currentText.replace('⏳ Setting models...', '') + 
+    modelStatusEl.innerHTML = currentText.replace('⏳ Setting models...', '') +
       `<span class="model-warning">⚠ ${serviceDisplay}: select model manually</span> `;
     console.warn(`[DualAI] Model selection failed for ${service}:`, error);
   }
@@ -683,30 +715,30 @@ let lastInspectorResult = null;
 
 async function runInspector(withDelay) {
   showStatus('Inspecting page...', '');
-  
+
   try {
     // Get the active tab
     const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-    
+
     if (!tab) {
       showStatus('No active tab found', 'error');
       return;
     }
-    
+
     // Check if it's an AI chat tab
-    if (!tab.url.includes('claude.ai') && !tab.url.includes('gemini.google.com')) {
-      showStatus('Please open a Claude or Gemini tab first', 'error');
+    if (!tab.url.includes('claude.ai') && !tab.url.includes('gemini.google.com') && !tab.url.includes('chatgpt.com')) {
+      showStatus('Please open a Claude, Gemini or ChatGPT tab first', 'error');
       return;
     }
-    
+
     if (withDelay) {
       showStatus('Open the model dropdown now! Inspecting in 3s...', '');
       await sleep(3000);
     }
-    
+
     // Send message to content script
     const result = await chrome.tabs.sendMessage(tab.id, { action: 'inspectDOM' });
-    
+
     if (result) {
       lastInspectorResult = result;
       displayInspectorResults(result);
@@ -715,7 +747,7 @@ async function runInspector(withDelay) {
     } else {
       showStatus('No response from page', 'error');
     }
-    
+
   } catch (error) {
     console.error('Inspector error:', error);
     showStatus(`Error: ${error.message}`, 'error');
@@ -726,7 +758,7 @@ function displayInspectorResults(result) {
   // Build summary HTML
   const summary = result.summary;
   const controls = result.likelyControls;
-  
+
   let summaryHtml = `
     <h4>📊 Summary (${result.meta.service})</h4>
     <div class="summary-grid">
@@ -745,9 +777,9 @@ function displayInspectorResults(result) {
       Submit Button: ${controls.submitButton ? '✓ Found' : '✗ Not found'}
     </div>
   `;
-  
+
   elements.inspectorSummary.innerHTML = summaryHtml;
-  
+
   // Format JSON output (exclude rawStructure for readability)
   const outputData = { ...result };
   delete outputData.rawStructure; // Too verbose for display
@@ -760,7 +792,7 @@ function closeInspectorModal() {
 
 async function copyInspectorJson() {
   if (!lastInspectorResult) return;
-  
+
   try {
     await navigator.clipboard.writeText(JSON.stringify(lastInspectorResult, null, 2));
     showStatus('JSON copied to clipboard', 'success');
@@ -771,9 +803,9 @@ async function copyInspectorJson() {
 
 async function copyInspectorWithPrompt() {
   if (!lastInspectorResult) return;
-  
+
   const prompt = generateAIPrompt(lastInspectorResult);
-  
+
   try {
     await navigator.clipboard.writeText(prompt);
     showStatus('Copied with AI prompt', 'success');
@@ -784,7 +816,7 @@ async function copyInspectorWithPrompt() {
 
 function generateAIPrompt(result) {
   const service = result.meta.service;
-  
+
   return `# DOM Inspection Results for ${service.charAt(0).toUpperCase() + service.slice(1)}
 
 ## Context
@@ -824,7 +856,7 @@ async function dismissOnboarding() {
 function showStatus(message, type = '') {
   elements.status.textContent = message;
   elements.status.className = 'status ' + type;
-  
+
   // Clear after delay
   setTimeout(() => {
     elements.status.textContent = '';
@@ -843,9 +875,9 @@ chrome.runtime.onMessage.addListener((message) => {
   if (message.action === 'operationStatus') {
     const statusEl = document.getElementById('status');
     if (statusEl) {
-       // Append or replace status text
-       const color = message.success === false ? 'red' : (message.success === true ? 'green' : 'gray');
-       statusEl.innerHTML += `<div style="color:${color}; font-size:11px;">${message.service}: ${message.statusText}</div>`;
+      // Append or replace status text
+      const color = message.success === false ? 'red' : (message.success === true ? 'green' : 'gray');
+      statusEl.innerHTML += `<div style="color:${color}; font-size:11px;">${message.service}: ${message.statusText}</div>`;
     }
   }
 });

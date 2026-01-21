@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dual AI Chat Launcher</title>
   <link rel="stylesheet" href="popup.css">
 </head>
+
 <body>
   <div class="app">
     <!-- Header -->
@@ -17,7 +19,9 @@
       <button class="btn-icon" id="settingsBtn" aria-label="Settings">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <circle cx="12" cy="12" r="3"></circle>
-          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+          <path
+            d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z">
+          </path>
         </svg>
       </button>
     </header>
@@ -27,28 +31,21 @@
       <!-- Prompt Input -->
       <section class="prompt-section">
         <label for="promptInput" class="label">Your Prompt</label>
-        <textarea 
-          id="promptInput" 
-          class="prompt-input" 
-          placeholder="Enter your prompt here... (Ctrl+Enter to launch)"
-          rows="6"
-        ></textarea>
+        <textarea id="promptInput" class="prompt-input" placeholder="Enter your prompt here... (Ctrl+Enter to launch)"
+          rows="6"></textarea>
       </section>
 
       <!-- File Reference -->
       <section class="file-section">
         <label for="fileReference" class="label">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path>
+            <path
+              d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48">
+            </path>
           </svg>
           Files to attach (reminder)
         </label>
-        <input 
-          type="text" 
-          id="fileReference" 
-          class="file-input" 
-          placeholder="e.g., report.pdf, screenshot.png"
-        >
+        <input type="text" id="fileReference" class="file-input" placeholder="e.g., report.pdf, screenshot.png">
       </section>
 
       <!-- Service Cards -->
@@ -61,6 +58,7 @@
               <span class="toggle-slider"></span>
             </label>
             <div class="service-info">
+              <img src="../assets/claude-logo.png" alt="Claude" class="service-icon" width="24" height="24">
               <span class="service-name claude-accent">Claude</span>
             </div>
           </div>
@@ -91,6 +89,21 @@
               <span class="toggle-slider"></span>
             </label>
             <div class="service-info">
+              <svg class="service-icon" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                xmlns="http://www.w3.org/2000/svg">
+                <path
+                  d="M16.5 12c0 2.5 2 4.5 4.5 4.5 2.5 0 4.5-2 4.5-4.5S23.5 7.5 21 7.5 16.5 9.5 16.5 12zM7.5 12c0-2.5-2-4.5-4.5-4.5S-1.5 9.5-1.5 12 0.5 16.5 3 16.5 7.5 14.5 7.5 12zM12 16.5c-2.5 0-4.5 2-4.5 4.5S9.5 25.5 12 25.5 16.5 23.5 16.5 21 14.5 16.5 12 16.5zM12 7.5c2.5 0 4.5-2 4.5-4.5S14.5-1.5 12-1.5 7.5 0.5 7.5 3 9.5 7.5 12 7.5z"
+                  fill="url(#gemini-gradient)" transform="scale(0.6) translate(8,8)" />
+                <path fill-rule="evenodd" clip-rule="evenodd"
+                  d="M12.0001 0.170715C10.7419 6.84362 6.84371 10.7418 0.170776 12C6.84371 13.2582 10.7419 17.1564 12.0001 23.8293C13.2582 17.1564 17.1564 13.2582 23.8293 12C17.1564 10.7418 13.2582 6.84362 12.0001 0.170715Z"
+                  fill="url(#gemini-gradient)" />
+                <defs>
+                  <linearGradient id="gemini-gradient" x1="0" y1="0" x2="24" y2="24" gradientUnits="userSpaceOnUse">
+                    <stop stop-color="#4E8CFF" />
+                    <stop offset="1" stop-color="#FFF" />
+                  </linearGradient>
+                </defs>
+              </svg>
               <span class="service-name gemini-accent">Gemini</span>
             </div>
           </div>
@@ -112,7 +125,30 @@
             </div>
           </div>
         </div>
-      </section>
+
+        <!-- ChatGPT Card -->
+        <div class="service-card" id="chatgptCard">
+          <div class="service-header">
+            <label class="service-toggle">
+              <input type="checkbox" id="chatgptEnabled" checked>
+              <span class="toggle-slider"></span>
+            </label>
+            <div class="service-info">
+              <img src="../assets/chatgpt-logo.png" alt="ChatGPT" class="service-icon" width="24" height="24">
+              <span class="service-name chatgpt-accent">ChatGPT</span>
+            </div>
+          </div>
+          <div class="service-options">
+            <div class="select-group">
+              <label for="chatgptModel" class="select-label">Model</label>
+              <select id="chatgptModel" class="select">
+                <option value="gpt-4o" selected>GPT-4o</option>
+                <option value="gpt-4o-mini">GPT-4o Mini</option>
+                <option value="o1-pro">o1 Pro</option>
+              </select>
+            </div>
+          </div>
+        </div>
     </main>
 
     <!-- Footer / Actions -->
@@ -122,7 +158,8 @@
         <span class="btn-loading" hidden>
           <svg class="spinner" width="20" height="20" viewBox="0 0 24 24">
             <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" fill="none" opacity="0.3"></circle>
-            <path d="M12 2a10 10 0 0 1 10 10" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round"></path>
+            <path d="M12 2a10 10 0 0 1 10 10" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round">
+            </path>
           </svg>
           Opening...
         </span>
@@ -142,7 +179,7 @@
           </svg>
         </button>
       </div>
-      
+
       <div class="settings-content">
         <!-- Claude Projects -->
         <section class="settings-section">
@@ -205,7 +242,8 @@
           </div>
           <div class="form-group">
             <label for="configUrl">Paste URL from browser</label>
-            <input type="text" id="configUrl" placeholder="https://claude.ai/project/... or https://gemini.google.com/u/.../gem/...">
+            <input type="text" id="configUrl"
+              placeholder="https://claude.ai/project/... or https://gemini.google.com/u/.../gem/...">
             <small class="hint" id="urlHint">Open your project/gem and copy the URL from the address bar</small>
           </div>
         </div>
@@ -251,4 +289,5 @@
 
   <script src="popup.js" type="module"></script>
 </body>
+
 </html>

@@ -1,206 +1,156 @@
 /**
  * Gemini Model Selector Content Script
- * Attempts to select the desired model in Gemini's UI
- * Designed to fail gracefully without breaking the extension
  */
 
 (function() {
   'use strict';
 
-  // Gemini uses data-test-id attributes for model options
   const MODEL_TEST_IDS = {
     'fast': 'bard-mode-option-fast',
     'thinking': 'bard-mode-option-thinking',
     'pro': 'bard-mode-option-pro'
   };
 
-  // Configuration
   const CONFIG = {
-    maxWaitTime: 8000,      // Maximum time to wait for UI elements
-    pollInterval: 300,      // How often to check for elements
-    clickDelay: 200,        // Delay between clicks
-    settleDelay: 500        // Time to let UI settle after actions
+    maxWaitTime: 10000,
+    pollInterval: 300,
+    clickDelay: 300,
+    settleDelay: 600
   };
 
-  // Listen for messages from background script
   chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-    if (message.action === 'selectModel' && message.service === 'gemini') {
-      handleModelSelection(message.modelId)
-        .then(result => sendResponse(result))
-        .catch(error => sendResponse({ 
-          success: false, 
-          error: error.message,
-          service: 'gemini'
-        }));
-      return true; // Keep channel open for async response
+    if (message.service !== 'gemini') return;
+
+    if (message.action === 'selectModel') {
+      selectModel(message.modelId)
+        .then(res => sendResponse(res))
+        .catch(err => sendResponse({ success: false, error: err.message, service: 'gemini' }));
+      return true;
+    }
+
+    if (message.action === 'insertPrompt') {
+      insertPrompt(message.prompt)
+        .then(res => sendResponse(res))
+        .catch(err => sendResponse({ success: false, error: err.message, service: 'gemini' }));
+      return true;
     }
   });
 
-  /**
-   * Main handler for model selection
-   */
-  async function handleModelSelection(modelId) {
-    console.log('[DualAI] Gemini: Attempting to select model:', modelId);
+  async function selectModel(modelId) {
+    console.log('[DualAI] Gemini: Selecting model:', modelId);
+
+    const testId = MODEL_TEST_IDS[modelId];
+    if (!testId) {
+      return { success: true, message: 'Default model, skipping', service: 'gemini' };
+    }
 
     try {
-      // Wait for page to be interactive
       await waitForPageReady();
 
-      // Find and click the model selector button
-      const selectorButton = await findModelSelectorButton();
-      if (!selectorButton) {
-        return { 
-          success: false, 
-          error: 'Model selector button not found',
-          service: 'gemini'
-        };
+      // Find the mode menu button
+      const btn = document.querySelector('[data-test-id="bard-mode-menu-button"] button') ||
+                  document.querySelector('[data-test-id="bard-mode-menu-button"]') ||
+                  document.querySelector('button[aria-label*="model"]');
+                  
+      if (!btn) {
+        // Model selector might be hidden for some accounts
+        return { success: false, error: 'Model selector not found (may be unavailable)', service: 'gemini' };
       }
 
-      // Click to open dropdown
-      selectorButton.click();
+      btn.click();
       await sleep(CONFIG.clickDelay);
 
-      // Wait for dropdown to appear and find the option
-      const modelOption = await findModelOption(modelId);
-      if (!modelOption) {
-        // Try to close dropdown before returning
-        document.body.click();
-        await sleep(100);
-        // Press Escape as backup
-        document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
-        
-        return { 
-          success: false, 
-          error: `Model option "${modelId}" not found in dropdown`,
-          service: 'gemini'
-        };
+      // Find and click the option
+      const option = document.querySelector(`[data-test-id="${testId}"]`);
+      if (option) {
+        option.click();
+        await sleep(CONFIG.settleDelay);
+        console.log('[DualAI] Gemini: Model selected');
+        return { success: true, service: 'gemini' };
       }
-
-      // Click the model option
-      modelOption.click();
-      await sleep(CONFIG.settleDelay);
-
-      console.log('[DualAI] Gemini: Successfully selected model:', modelId);
-      return { 
-        success: true, 
-        service: 'gemini',
-        model: modelId
-      };
+      
+      // Close menu if option not found
+      document.body.click();
+      return { success: false, error: 'Model option not found', service: 'gemini' };
 
     } catch (error) {
-      console.error('[DualAI] Gemini: Model selection failed:', error);
-      return { 
-        success: false, 
-        error: error.message,
-        service: 'gemini'
-      };
+      console.error('[DualAI] Gemini error:', error);
+      return { success: false, error: error.message, service: 'gemini' };
     }
   }
 
-  /**
-   * Wait for page to be ready for interaction
-   */
+  async function insertPrompt(text) {
+    console.log('[DualAI] Gemini: Inserting prompt');
+
+    try {
+      await waitForPageReady();
+
+      // Gemini input is a contenteditable div, often inside rich-textarea
+      const editor = document.querySelector('.ql-editor[contenteditable="true"]') ||
+                     document.querySelector('.rich-textarea [contenteditable="true"]') ||
+                     document.querySelector('[contenteditable="true"][aria-label*="prompt"]') ||
+                     document.querySelector('[contenteditable="true"]');
+                     
+      if (!editor) {
+        return { success: false, error: 'Gemini input not found', service: 'gemini' };
+      }
+
+      editor.focus();
+      await sleep(100);
+
+      // Clear and insert
+      editor.innerHTML = '';
+      
+      // Try execCommand first
+      document.execCommand('insertText', false, text);
+      
+      // Fallback to direct manipulation
+      if (!editor.textContent) {
+        const p = document.createElement('p');
+        p.textContent = text;
+        editor.appendChild(p);
+        
+        editor.dispatchEvent(new InputEvent('input', {
+          bubbles: true,
+          cancelable: true,
+          inputType: 'insertText',
+          data: text
+        }));
+      }
+
+      console.log('[DualAI] Gemini: Prompt inserted');
+      return { success: true, service: 'gemini' };
+
+    } catch (error) {
+      console.error('[DualAI] Gemini prompt error:', error);
+      return { success: false, error: error.message, service: 'gemini' };
+    }
+  }
+
   async function waitForPageReady() {
     const startTime = Date.now();
     
     while (Date.now() - startTime < CONFIG.maxWaitTime) {
-      // Check if main chat interface is loaded - Gemini specific elements
-      const chatReady = document.querySelector(
-        'textarea, ' +
-        '[contenteditable="true"], ' +
-        '[class*="input-area"], ' +
-        '[class*="chat-input"], ' +
-        '[class*="prompt"]'
-      );
-      
-      if (chatReady) {
+      const editor = document.querySelector('[contenteditable="true"]');
+      if (editor && isVisible(editor)) {
         await sleep(CONFIG.settleDelay);
         return true;
       }
-      
       await sleep(CONFIG.pollInterval);
     }
     
-    throw new Error('Page did not become ready in time');
+    throw new Error('Page did not become ready');
   }
 
-  /**
-   * Find the model selector button
-   */
-  async function findModelSelectorButton() {
-    const startTime = Date.now();
-
-    while (Date.now() - startTime < CONFIG.maxWaitTime) {
-      // Primary: Use data-test-id for the mode menu button
-      const btn = document.querySelector('[data-test-id="bard-mode-menu-button"]');
-      if (btn && isVisible(btn)) {
-        console.log('[DualAI] Gemini: Found model selector via data-test-id');
-        // Click the inner button or the container
-        const innerBtn = btn.querySelector('button') || btn;
-        return innerBtn;
-      }
-
-      // Fallback: button with class input-area-switch
-      const fallback = document.querySelector('button.input-area-switch');
-      if (fallback && isVisible(fallback)) {
-        console.log('[DualAI] Gemini: Found model selector via input-area-switch class');
-        return fallback;
-      }
-
-      await sleep(CONFIG.pollInterval);
-    }
-
-    return null;
-  }
-
-  /**
-   * Find the model option in the dropdown
-   */
-  async function findModelOption(modelId) {
-    const testId = MODEL_TEST_IDS[modelId];
-    if (!testId) {
-      console.error('[DualAI] Gemini: Unknown model ID:', modelId);
-      return null;
-    }
-
-    const startTime = Date.now();
-
-    while (Date.now() - startTime < CONFIG.maxWaitTime) {
-      // Use the specific data-test-id for each model option
-      const option = document.querySelector(`[data-test-id="${testId}"]`);
-      if (option && isVisible(option)) {
-        console.log('[DualAI] Gemini: Found model option via data-test-id:', testId);
-        return option;
-      }
-
-      await sleep(CONFIG.pollInterval);
-    }
-
-    return null;
-  }
-
-  /**
-   * Check if element is visible
-   */
   function isVisible(element) {
     if (!element) return false;
-    
-    const style = window.getComputedStyle(element);
     const rect = element.getBoundingClientRect();
-    
-    return style.display !== 'none' 
-      && style.visibility !== 'hidden' 
-      && style.opacity !== '0'
-      && rect.width > 0 
-      && rect.height > 0;
+    return rect.width > 0 && rect.height > 0;
   }
 
-  /**
-   * Sleep utility
-   */
-  function sleep(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
+  function sleep(ms) { 
+    return new Promise(r => setTimeout(r, ms)); 
   }
 
-  console.log('[DualAI] Gemini model selector script loaded');
+  console.log('[DualAI] Gemini content script loaded');
 })();

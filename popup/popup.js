@@ -837,3 +837,15 @@ function escapeHtml(text) {
   div.textContent = text;
   return div.innerHTML;
 }
+
+// Add this inside popup.js
+chrome.runtime.onMessage.addListener((message) => {
+  if (message.action === 'operationStatus') {
+    const statusEl = document.getElementById('status');
+    if (statusEl) {
+       // Append or replace status text
+       const color = message.success === false ? 'red' : (message.success === true ? 'green' : 'gray');
+       statusEl.innerHTML += `<div style="color:${color}; font-size:11px;">${message.service}: ${message.statusText}</div>`;
+    }
+  }
+});

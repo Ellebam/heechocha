@@ -1,0 +1,27 @@
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor directories
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Build outputs
+dist/
+*.zip
+
+# Logs
+*.log
+npm-debug.log*
+
+# Local development
+.env
+.env.local
+
+# Package manager
+node_modules/
+package-lock.json
+yarn.lock

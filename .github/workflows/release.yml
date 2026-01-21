@@ -1,0 +1,65 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Get version from tag
+        id: get_version
+        run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
+
+      - name: Create release zip
+        run: |
+          mkdir -p dist
+          zip -r dist/hechachoo-v${{ steps.get_version.outputs.VERSION }}.zip \
+            manifest.json \
+            popup/ \
+            background/ \
+            content/ \
+            lib/ \
+            assets/ \
+            README.md \
+            LICENSE \
+            -x "*.DS_Store" -x "*/.git/*"
+
+      - name: Extract changelog for this version
+        id: changelog
+        run: |
+          # Extract the changelog section for this version
+          VERSION="${{ steps.get_version.outputs.VERSION }}"
+          CHANGELOG=$(sed -n "/## \[$VERSION\]/,/## \[/p" CHANGELOG.md | sed '$d')
+          echo "CHANGELOG<<EOF" >> $GITHUB_OUTPUT
+          echo "$CHANGELOG" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          name: Hechachoo v${{ steps.get_version.outputs.VERSION }}
+          body: |
+            ${{ steps.changelog.outputs.CHANGELOG }}
+            
+            ---
+            
+            ## Installation
+            
+            1. Download `hechachoo-v${{ steps.get_version.outputs.VERSION }}.zip`
+            2. Extract the zip file
+            3. Open Chrome and go to `chrome://extensions/`
+            4. Enable "Developer mode"
+            5. Click "Load unpacked" and select the extracted folder
+          files: dist/hechachoo-v${{ steps.get_version.outputs.VERSION }}.zip
+          draft: false
+          prerelease: false

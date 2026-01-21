@@ -1,13 +1,13 @@
 <div align="center">
 
-# 🎯 Hechocha
+# 🎯 heechocha
 
 ### The AI Multi-Picker
 
 **Send one prompt. Get answers from multiple AI tools. Compare instantly.**
 
-[![Chrome Extension](https://img.shields.io/badge/Platform-Chrome%20Extension-4285F4?logo=googlechrome&logoColor=white)](https://github.com/Ellebam/hechocha)
-[![Version](https://img.shields.io/badge/version-1.0.0-blue)](https://github.com/Ellebam/hechocha/releases)
+[![Chrome Extension](https://img.shields.io/badge/Platform-Chrome%20Extension-4285F4?logo=googlechrome&logoColor=white)](https://github.com/Ellebam/heechocha)
+[![Version](https://img.shields.io/badge/version-1.0.0-blue)](https://github.com/Ellebam/heechocha/releases)
 [![License](https://img.shields.io/badge/license-Apache--2.0-green)](LICENSE)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
 
@@ -15,17 +15,17 @@
 
 ---
 
-<img src="assets/demo.gif" alt="Hechocha Demo" width="600">
+<img src="assets/demo.gif" alt="heechocha Demo" width="600">
 
 *One prompt, multiple AI backends, side-by-side comparison*
 
 </div>
 
-## 🤔 Why Hechocha?
+## 🤔 Why heechocha?
 
 Ever found yourself copy-pasting the same prompt between Claude, Gemini, ChatGPT, and others just to compare responses? It's tedious, error-prone, and breaks your flow.
 
-**Hechocha solves this.** Write your prompt once, pick your AI backends, and launch them all simultaneously. Your prompt is auto-copied to clipboard, tabs are grouped together, and you're ready to paste and compare.
+**heechocha solves this.** Write your prompt once, pick your AI backends, and launch them all simultaneously. Your prompt is auto-copied to clipboard, tabs are grouped together, and you're ready to paste and compare.
 
 No API keys needed. No costs beyond your existing subscriptions. Just faster AI workflows.
 
@@ -52,7 +52,7 @@ No API keys needed. No costs beyond your existing subscriptions. Just faster AI 
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/Ellebam/hechocha.git
+   git clone https://github.com/Ellebam/heechocha.git
    ```
 
 2. **Open Chrome Extensions**
@@ -64,11 +64,11 @@ No API keys needed. No costs beyond your existing subscriptions. Just faster AI 
 
 4. **Load the Extension**
    - Click **"Load unpacked"**
-   - Select the cloned `hechocha` folder (where `manifest.json` lives)
+   - Select the cloned `heechocha` folder (where `manifest.json` lives)
 
 5. **Pin the Extension**
    - Click the puzzle piece icon in Chrome toolbar
-   - Pin Hechocha for quick access
+   - Pin heechocha for quick access
 
 ---
 
@@ -77,7 +77,7 @@ No API keys needed. No costs beyond your existing subscriptions. Just faster AI 
 ### Basic Flow
 
 ```
-1. Click the Hechocha icon
+1. Click the heechocha icon
 2. Write your prompt
 3. Toggle which AI backends to use
 4. Click "Launch Chats" (or Ctrl+Enter)
@@ -119,14 +119,14 @@ Access via the ⚙️ button in the popup:
 
 1. In Claude.ai, open your desired Project
 2. Copy the URL from the address bar
-3. In Hechocha Settings → Claude Projects → "Add Project"
+3. In heechocha Settings → Claude Projects → "Add Project"
 4. Paste URL and give it a name
 
 ### Adding Gemini Gems
 
 1. In Gemini, open your desired Gem
 2. Copy the URL from the address bar
-3. In Hechocha Settings → Gemini Gems → "Add Gem"
+3. In heechocha Settings → Gemini Gems → "Add Gem"
 4. Paste URL and give it a name
 
 > **Note:** Gemini URLs include your Google account number (e.g., `/u/6/`). This is extracted automatically to ensure the correct account opens.
@@ -135,7 +135,7 @@ Access via the ⚙️ button in the popup:
 
 ## 🗺️ Roadmap
 
-We're actively developing Hechocha. Here's what's coming:
+We're actively developing heechocha. Here's what's coming:
 
 ### v1.1.0 — More Backends
 - [ ] ChatGPT support
@@ -153,14 +153,14 @@ We're actively developing Hechocha. Here's what's coming:
 - [ ] Response quality scoring
 - [ ] API mode for power users
 
-Got ideas? [Open an issue](https://github.com/Ellebam/hechocha/issues/new?template=feature_request.md) or [contribute directly](CONTRIBUTING.md)!
+Got ideas? [Open an issue](https://github.com/Ellebam/heechocha/issues/new?template=feature_request.md) or [contribute directly](CONTRIBUTING.md)!
 
 ---
 
 ## 🏗️ Project Structure
 
 ```
-hechocha/
+heechocha/
 ├── manifest.json           # Chrome extension manifest (v3)
 ├── popup/
 │   ├── popup.html          # Extension popup UI
@@ -199,7 +199,7 @@ Please read our [Contributing Guide](CONTRIBUTING.md) and [Code of Conduct](CODE
 <details>
 <summary><strong>Extension icon not visible</strong></summary>
 
-Click the puzzle piece icon in Chrome's toolbar and pin Hechocha.
+Click the puzzle piece icon in Chrome's toolbar and pin heechocha.
 </details>
 
 <details>
@@ -242,7 +242,7 @@ Built for the AI-curious who want to get the most out of every prompt.
 
 <div align="center">
 
-**[⬆ Back to Top](#-hechocha)**
+**[⬆ Back to Top](#-heechocha)**
 
 Made with ☕ by [Ellebam](https://github.com/Ellebam)
 

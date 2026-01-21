@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "Hechocha - AI Multi-Picker",
+  "name": "heechocha - AI Multi-Picker",
   "version": "1.0.0",
   "description": "Send one prompt to multiple AI tools simultaneously. Compare Claude, Gemini, and more side-by-side.",
   "icons": {
@@ -17,7 +17,7 @@
       "48": "assets/icon-48.png",
       "128": "assets/icon-128.png"
     },
-    "default_title": "Hechocha - AI Multi-Picker"
+    "default_title": "heechocha - AI Multi-Picker"
   },
   "permissions": [
     "storage",

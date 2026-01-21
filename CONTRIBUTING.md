@@ -1,6 +1,6 @@
-# Contributing to Hechocha
+# Contributing to heechocha
 
-First off, thanks for considering contributing to Hechocha! 🎉
+First off, thanks for considering contributing to heechocha! 🎉
 
 ## Quick Start
 
@@ -15,14 +15,14 @@ First off, thanks for considering contributing to Hechocha! 🎉
 
 ```bash
 # Clone your fork
-git clone https://github.com/YOUR_USERNAME/hechocha.git
-cd hechocha
+git clone https://github.com/YOUR_USERNAME/heechocha.git
+cd heechocha
 
 # Load in Chrome
 # 1. Go to chrome://extensions/
 # 2. Enable "Developer mode"
 # 3. Click "Load unpacked"
-# 4. Select the hechocha folder
+# 4. Select the heechocha folder
 ```
 
 No build step required — it's vanilla JavaScript.
@@ -101,4 +101,4 @@ Open an issue with the `question` label.
 
 ---
 
-Thanks for helping make Hechocha better! 🚀
+Thanks for helping make heechocha better! 🚀

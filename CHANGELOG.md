@@ -8,9 +8,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Planned
-- ChatGPT backend support
 - Perplexity backend support
 - Side-by-side response comparison
+
+---
+
+## [1.1.0] - 2026-01-21
+
+### Added
+- 🚀 **ChatGPT Support**: Launch prompts to ChatGPT with model selection
+- 🎨 **Service Logos**: Added official-style logos for Claude, Gemini, and ChatGPT
+- 🔘 **Independent Toggles**: Each service (Claude, Gemini, ChatGPT) can be enabled/disabled independently
+
+### Fixed
+- 🐛 **Gemini Multiline Prompts**: Fixed multiline text not being inserted correctly into Gemini's editor
+- 🐛 **Gemini Single Account**: Fixed URL parsing for users with a single Google account (no `/u/X` in URL)
+- 🔧 **Claude Model Selection**: Improved reliability of automatic model selection
+
+### Technical
+- Content script for ChatGPT DOM interaction
+- Updated URL builder to support ChatGPT
+- Relaxed Gemini URL parsing regex
 
 ---
 

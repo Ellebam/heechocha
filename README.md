@@ -35,10 +35,10 @@ No API keys needed. No costs beyond your existing subscriptions. Just faster AI 
 
 | Feature | Description |
 |---------|-------------|
-| 🚀 **Multi-Launch** | Send prompts to Claude and Gemini simultaneously (more backends coming) |
+| 🚀 **Multi-Launch** | Send prompts to Claude, Gemini, and ChatGPT simultaneously |
 | 📋 **Auto-Copy** | Prompt automatically copied to clipboard for instant pasting |
 | 🗂️ **Project Support** | Pre-configure Claude Projects and Gemini Gems for quick access |
-| ⚙️ **Model Selection** | Choose specific models (Claude Opus, Sonnet, Gemini Pro, etc.) |
+| ⚙️ **Model Selection** | Choose specific models (Claude Opus, Sonnet, Gemini Pro, GPT-4o, etc.) |
 | 📑 **Tab Grouping** | Opened tabs are auto-grouped for easy management |
 | 🌙 **Dark Mode** | Native dark theme that matches AI interfaces |
 | ⌨️ **Keyboard Shortcuts** | `Ctrl+Enter` / `Cmd+Enter` to launch instantly |
@@ -137,8 +137,8 @@ Access via the ⚙️ button in the popup:
 
 We're actively developing heechocha. Here's what's coming:
 
-### v1.1.0 — More Backends
-- [ ] ChatGPT support
+### v1.1.0 — More Backends ✅
+- [x] ChatGPT support
 - [ ] Perplexity support
 - [ ] Custom backend configuration
 

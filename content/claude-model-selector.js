@@ -3,7 +3,7 @@
  * Updated for current Claude UI (2025)
  */
 
-(function() {
+(function () {
   'use strict';
 
   // Model display names - match exactly what Claude shows
@@ -51,7 +51,7 @@
 
       // Strategy 1: Look for data-testid
       let selectorBtn = document.querySelector('[data-testid="model-selector-dropdown"]');
-      
+
       // Strategy 2: Find button containing model keywords
       if (!selectorBtn) {
         const buttons = Array.from(document.querySelectorAll('button'));
@@ -113,12 +113,12 @@
     while (Date.now() - startTime < CONFIG.maxWaitTime) {
       // Look for menu items
       const menuItems = document.querySelectorAll('[role="menuitem"], [role="option"], [role="menuitemradio"]');
-      
+
       for (const item of menuItems) {
         if (!isVisible(item)) continue;
-        
+
         const itemText = item.textContent?.trim() || '';
-        
+
         // Check if any target name matches
         for (const name of targetNames) {
           if (itemText.includes(name)) {
@@ -185,7 +185,7 @@
 
   async function waitForPageReady() {
     const startTime = Date.now();
-    
+
     while (Date.now() - startTime < CONFIG.maxWaitTime) {
       const inputArea = document.querySelector('[contenteditable="true"]');
       if (inputArea && isVisible(inputArea)) {
@@ -194,7 +194,7 @@
       }
       await sleep(CONFIG.pollInterval);
     }
-    
+
     throw new Error('Page did not become ready');
   }
 

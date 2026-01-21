@@ -19,6 +19,13 @@ function buildGeminiUrl(gemId, accountIndex) {
   return `https://gemini.google.com${accountPath}/app`;
 }
 
+function buildChatgptUrl(model) {
+  if (model) {
+    return `https://chatgpt.com/?model=${model}`;
+  }
+  return 'https://chatgpt.com/';
+}
+
 // Handle messages from popup
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.action === 'launchChats') {
@@ -38,7 +45,9 @@ async function handleLaunchChats(data) {
     geminiGemId,
     geminiAccountIndex,
     claudeModel,
-    geminiModel
+    geminiModel,
+    chatgptModel,
+    chatgptEnabled
   } = data;
 
   const tabsOpened = [];
@@ -68,6 +77,17 @@ async function handleLaunchChats(data) {
         windowId: currentWindow.id
       });
       tabsOpened.push({ service: 'gemini', tabId: geminiTab.id, model: geminiModel });
+    }
+
+    // Open ChatGPT tab
+    if (chatgptEnabled) {
+      const chatgptUrl = buildChatgptUrl(chatgptModel);
+      const chatgptTab = await chrome.tabs.create({
+        url: chatgptUrl,
+        active: !claudeEnabled && !geminiEnabled,
+        windowId: currentWindow.id
+      });
+      tabsOpened.push({ service: 'chatgpt', tabId: chatgptTab.id, model: chatgptModel });
     }
 
     // Group tabs if multiple opened
@@ -118,7 +138,7 @@ function scheduleModelSelection(tabId, service, modelId, prompt) {
 
     try {
       const tab = await chrome.tabs.get(tabId);
-      
+
       if (tab.status === 'complete') {
         // Small delay to let JS frameworks initialize
         setTimeout(async () => {

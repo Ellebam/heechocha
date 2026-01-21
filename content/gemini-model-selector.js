@@ -2,7 +2,7 @@
  * Gemini Model Selector Content Script
  */
 
-(function() {
+(function () {
   'use strict';
 
   const MODEL_TEST_IDS = {
@@ -49,9 +49,9 @@
 
       // Find the mode menu button
       const btn = document.querySelector('[data-test-id="bard-mode-menu-button"] button') ||
-                  document.querySelector('[data-test-id="bard-mode-menu-button"]') ||
-                  document.querySelector('button[aria-label*="model"]');
-                  
+        document.querySelector('[data-test-id="bard-mode-menu-button"]') ||
+        document.querySelector('button[aria-label*="model"]');
+
       if (!btn) {
         // Model selector might be hidden for some accounts
         return { success: false, error: 'Model selector not found (may be unavailable)', service: 'gemini' };
@@ -68,7 +68,7 @@
         console.log('[DualAI] Gemini: Model selected');
         return { success: true, service: 'gemini' };
       }
-      
+
       // Close menu if option not found
       document.body.click();
       return { success: false, error: 'Model option not found', service: 'gemini' };
@@ -87,10 +87,10 @@
 
       // Gemini input is a contenteditable div, often inside rich-textarea
       const editor = document.querySelector('.ql-editor[contenteditable="true"]') ||
-                     document.querySelector('.rich-textarea [contenteditable="true"]') ||
-                     document.querySelector('[contenteditable="true"][aria-label*="prompt"]') ||
-                     document.querySelector('[contenteditable="true"]');
-                     
+        document.querySelector('.rich-textarea [contenteditable="true"]') ||
+        document.querySelector('[contenteditable="true"][aria-label*="prompt"]') ||
+        document.querySelector('[contenteditable="true"]');
+
       if (!editor) {
         return { success: false, error: 'Gemini input not found', service: 'gemini' };
       }
@@ -100,16 +100,24 @@
 
       // Clear and insert
       editor.innerHTML = '';
-      
-      // Try execCommand first
-      document.execCommand('insertText', false, text);
-      
-      // Fallback to direct manipulation
+
+      // Fallback to direct manipulation with multiline support
       if (!editor.textContent) {
-        const p = document.createElement('p');
-        p.textContent = text;
-        editor.appendChild(p);
-        
+        // Replace newlines with <br> for contenteditable
+        const htmlContent = text.replace(/\n/g, '<br>');
+
+        // Focus and select all to ensure clean insertion
+        editor.focus();
+
+        // Use insertHTML to preserve line breaks
+        const success = document.execCommand('insertHTML', false, htmlContent);
+
+        if (!success) {
+          // If execCommand fails, try direct innerHTML (less ideal but works)
+          editor.innerHTML = htmlContent;
+        }
+
+        // Trigger input event to notify React/Framework
         editor.dispatchEvent(new InputEvent('input', {
           bubbles: true,
           cancelable: true,
@@ -129,7 +137,7 @@
 
   async function waitForPageReady() {
     const startTime = Date.now();
-    
+
     while (Date.now() - startTime < CONFIG.maxWaitTime) {
       const editor = document.querySelector('[contenteditable="true"]');
       if (editor && isVisible(editor)) {
@@ -138,7 +146,7 @@
       }
       await sleep(CONFIG.pollInterval);
     }
-    
+
     throw new Error('Page did not become ready');
   }
 
@@ -148,8 +156,8 @@
     return rect.width > 0 && rect.height > 0;
   }
 
-  function sleep(ms) { 
-    return new Promise(r => setTimeout(r, ms)); 
+  function sleep(ms) {
+    return new Promise(r => setTimeout(r, ms));
   }
 
   console.log('[DualAI] Gemini content script loaded');

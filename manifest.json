@@ -1,18 +1,14 @@
 {
   "manifest_version": 3,
-  "name": "Dual AI Chat Launcher",
-  "version": "1.1.0",
-  "description": "Launch prompts to Claude and Gemini simultaneously for side-by-side comparison",
-  "permissions": [
-    "storage",
-    "clipboardWrite",
-    "tabs",
-    "scripting"
-  ],
-  "host_permissions": [
-    "https://claude.ai/*",
-    "https://gemini.google.com/*"
-  ],
+  "name": "Hechocha - AI Multi-Picker",
+  "version": "1.0.0",
+  "description": "Send one prompt to multiple AI tools simultaneously. Compare Claude, Gemini, and more side-by-side.",
+  "icons": {
+    "16": "assets/icon-16.png",
+    "32": "assets/icon-32.png",
+    "48": "assets/icon-48.png",
+    "128": "assets/icon-128.png"
+  },
   "action": {
     "default_popup": "popup/popup.html",
     "default_icon": {
@@ -20,8 +16,19 @@
       "32": "assets/icon-32.png",
       "48": "assets/icon-48.png",
       "128": "assets/icon-128.png"
-    }
+    },
+    "default_title": "Hechocha - AI Multi-Picker"
   },
+  "permissions": [
+    "storage",
+    "clipboardWrite",
+    "tabs",
+    "tabGroups"
+  ],
+  "host_permissions": [
+    "https://claude.ai/*",
+    "https://gemini.google.com/*"
+  ],
   "background": {
     "service_worker": "background/service-worker.js"
   },
@@ -35,17 +42,6 @@
       "matches": ["https://gemini.google.com/*"],
       "js": ["content/gemini-model-selector.js"],
       "run_at": "document_idle"
-    },
-    {
-      "matches": ["https://claude.ai/*", "https://gemini.google.com/*"],
-      "js": ["content/dom-inspector.js"],
-      "run_at": "document_idle"
     }
-  ],
-  "icons": {
-    "16": "assets/icon-16.png",
-    "32": "assets/icon-32.png",
-    "48": "assets/icon-48.png",
-    "128": "assets/icon-128.png"
-  }
+  ]
 }

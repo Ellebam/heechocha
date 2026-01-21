@@ -1,194 +1,249 @@
-# Dual AI Chat Launcher
+<div align="center">
 
-A lightweight Chrome extension that helps you send the same prompt to both Claude and Gemini simultaneously for side-by-side AI response comparison.
+# 🎯 Hechocha
 
-## Features
+### The AI Multi-Picker
 
-- 📝 **Single prompt input** — Write once, send to both services
-- 📋 **Clipboard integration** — Prompt automatically copied for easy pasting
-- 🗂️ **Project/Gem support** — Configure your Claude Projects and Gemini Gems
-- ⚙️ **Model selection** — Choose which model to use on each service
-- 🎯 **Tab grouping** — Opened tabs are grouped together for easy management
-- 🌙 **Dark mode** — Easy on the eyes, matches both AI interfaces
+**Send one prompt. Get answers from multiple AI tools. Compare instantly.**
 
-## How It Works
+[![Chrome Extension](https://img.shields.io/badge/Platform-Chrome%20Extension-4285F4?logo=googlechrome&logoColor=white)](https://github.com/Ellebam/hechocha)
+[![Version](https://img.shields.io/badge/version-1.0.0-blue)](https://github.com/Ellebam/hechocha/releases)
+[![License](https://img.shields.io/badge/license-Apache--2.0-green)](LICENSE)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
 
-1. Enter your prompt in the extension popup
-2. Select which services to use (Claude, Gemini, or both)
-3. Optionally select a specific Project or Gem
-4. Choose the desired model for each service
-5. Click "Launch Chats"
-6. The extension copies your prompt and opens new tabs
-7. **Model auto-selection** attempts to set your chosen model (see below)
-8. Paste (Ctrl+V / Cmd+V) in each chat and submit
+[Features](#-features) • [Installation](#-installation) • [Usage](#-usage) • [Configuration](#%EF%B8%8F-configuration) • [Roadmap](#-roadmap) • [Contributing](#-contributing)
 
-### Model Selection Feature
+---
 
-The extension attempts to automatically select your chosen model in each chat interface. This feature:
+<img src="assets/demo.gif" alt="Hechocha Demo" width="600">
 
-- ✅ **Works when it works** — If the UI elements are found, models are selected automatically
-- ⚠️ **Fails gracefully** — If selection fails, you'll see a warning but the extension continues working
-- 🔄 **May need manual selection** — If you see "select model manually", just pick the model yourself
+*One prompt, multiple AI backends, side-by-side comparison*
 
-Model selection can fail if Claude or Gemini update their interfaces. The core functionality (opening tabs + copying prompt) always works regardless.
+</div>
 
-> **Note:** The extension opens tabs and copies your prompt. If model auto-selection fails, simply select the model manually in each chat before submitting.
+## 🤔 Why Hechocha?
 
-## Installation
+Ever found yourself copy-pasting the same prompt between Claude, Gemini, ChatGPT, and others just to compare responses? It's tedious, error-prone, and breaks your flow.
 
-### Step 1: Download the Extension
+**Hechocha solves this.** Write your prompt once, pick your AI backends, and launch them all simultaneously. Your prompt is auto-copied to clipboard, tabs are grouped together, and you're ready to paste and compare.
 
-Download or clone this repository to a folder on your computer.
+No API keys needed. No costs beyond your existing subscriptions. Just faster AI workflows.
 
-### Step 2: Open Chrome Extensions
+---
 
-1. Open Chrome browser
-2. Navigate to `chrome://extensions/`
-3. Or go to Menu (⋮) → Extensions → Manage Extensions
+## ✨ Features
 
-### Step 3: Enable Developer Mode
+| Feature | Description |
+|---------|-------------|
+| 🚀 **Multi-Launch** | Send prompts to Claude and Gemini simultaneously (more backends coming) |
+| 📋 **Auto-Copy** | Prompt automatically copied to clipboard for instant pasting |
+| 🗂️ **Project Support** | Pre-configure Claude Projects and Gemini Gems for quick access |
+| ⚙️ **Model Selection** | Choose specific models (Claude Opus, Sonnet, Gemini Pro, etc.) |
+| 📑 **Tab Grouping** | Opened tabs are auto-grouped for easy management |
+| 🌙 **Dark Mode** | Native dark theme that matches AI interfaces |
+| ⌨️ **Keyboard Shortcuts** | `Ctrl+Enter` / `Cmd+Enter` to launch instantly |
+| 💾 **Persistent Settings** | Remember your last prompt and preferences |
 
-1. In the top-right corner, toggle **Developer mode** ON
-2. You should see additional buttons appear: "Load unpacked", "Pack extension", etc.
+---
 
-### Step 4: Load the Extension
+## 📦 Installation
 
-1. Click **"Load unpacked"**
-2. Navigate to the folder containing this extension (where `manifest.json` is located)
-3. Select the folder and click "Open" or "Select Folder"
+### From Source (Developer Mode)
 
-### Step 5: Verify Installation
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/Ellebam/hechocha.git
+   ```
 
-1. You should see "Dual AI Chat Launcher" in your extensions list
-2. The extension icon (⚡) should appear in your Chrome toolbar
-3. If you don't see the icon, click the puzzle piece icon (Extensions) and pin the extension
+2. **Open Chrome Extensions**
+   - Navigate to `chrome://extensions/`
+   - Or: Menu (⋮) → Extensions → Manage Extensions
 
-## Initial Setup
+3. **Enable Developer Mode**
+   - Toggle **Developer mode** ON (top-right corner)
+
+4. **Load the Extension**
+   - Click **"Load unpacked"**
+   - Select the cloned `hechocha` folder (where `manifest.json` lives)
+
+5. **Pin the Extension**
+   - Click the puzzle piece icon in Chrome toolbar
+   - Pin Hechocha for quick access
+
+---
+
+## 🚀 Usage
+
+### Basic Flow
+
+```
+1. Click the Hechocha icon
+2. Write your prompt
+3. Toggle which AI backends to use
+4. Click "Launch Chats" (or Ctrl+Enter)
+5. Paste (Ctrl+V) in each opened tab
+6. Compare responses side-by-side
+```
+
+### Using Projects & Gems
+
+Pre-configure your frequently used Claude Projects and Gemini Gems:
+
+1. Open **Settings** (⚙️ icon)
+2. Add your Claude Project URLs under "Claude Projects"
+3. Add your Gemini Gem URLs under "Gemini Gems"
+4. Select them from dropdowns when launching
+
+### Keyboard Shortcuts
+
+| Shortcut | Action |
+|----------|--------|
+| `Ctrl+Enter` / `Cmd+Enter` | Launch chats |
+| `Escape` | Close popup |
+
+---
+
+## ⚙️ Configuration
+
+### Settings Panel
+
+Access via the ⚙️ button in the popup:
+
+| Setting | Description |
+|---------|-------------|
+| **Auto-close popup** | Close the extension popup after launching tabs |
+| **Group tabs** | Auto-group opened AI tabs together |
+| **Remember prompt** | Restore your last prompt when reopening |
 
 ### Adding Claude Projects
 
-1. Click the extension icon to open the popup
-2. Click the **⚙️ Settings** button (top-right)
-3. Under "Claude Projects", click **"+ Add Project"**
-4. In Claude.ai, open the project you want to add
-5. Copy the URL from your browser's address bar
-6. Paste the URL into the extension and give it a name
-7. Click **Save**
+1. In Claude.ai, open your desired Project
+2. Copy the URL from the address bar
+3. In Hechocha Settings → Claude Projects → "Add Project"
+4. Paste URL and give it a name
 
 ### Adding Gemini Gems
 
-1. In the Settings panel, under "Gemini Gems", click **"+ Add Gem"**
-2. In Gemini, open the gem you want to add
-3. Copy the URL from your browser's address bar
-4. Paste the URL into the extension and give it a name
-5. Click **Save**
+1. In Gemini, open your desired Gem
+2. Copy the URL from the address bar
+3. In Hechocha Settings → Gemini Gems → "Add Gem"
+4. Paste URL and give it a name
 
-> **Important:** The Gemini URL includes your Google account number (e.g., `/u/6/`). This is extracted automatically and used to ensure the extension opens the correct account.
+> **Note:** Gemini URLs include your Google account number (e.g., `/u/6/`). This is extracted automatically to ensure the correct account opens.
 
-## Usage
+---
 
-### Basic Usage
+## 🗺️ Roadmap
 
-1. Click the extension icon
-2. Type your prompt in the text area
-3. Make sure both Claude and Gemini toggles are enabled
-4. Click **🚀 Launch Chats**
-5. Two tabs will open — paste your prompt in each and submit
+We're actively developing Hechocha. Here's what's coming:
 
-### Using Projects/Gems
+### v1.1.0 — More Backends
+- [ ] ChatGPT support
+- [ ] Perplexity support
+- [ ] Custom backend configuration
 
-1. Select a project from the "Project" dropdown for Claude
-2. Select a gem from the "Gem" dropdown for Gemini
-3. Launch as usual — tabs will open to the correct project/gem
+### v1.2.0 — Response Comparison
+- [ ] Side-by-side response viewer
+- [ ] Response diff highlighting
+- [ ] Export comparison results
 
-### Keyboard Shortcut
+### Future Ideas
+- [ ] Prompt templates & history
+- [ ] Batch prompt execution
+- [ ] Response quality scoring
+- [ ] API mode for power users
 
-- **Ctrl+Enter** (or **Cmd+Enter** on Mac) — Launch chats from the prompt input
+Got ideas? [Open an issue](https://github.com/Ellebam/hechocha/issues/new?template=feature_request.md) or [contribute directly](CONTRIBUTING.md)!
 
-### Preferences
+---
 
-Access via Settings (⚙️):
-
-- **Auto-close popup after launch** — Automatically closes the popup after opening tabs
-- **Group opened tabs together** — Groups Claude and Gemini tabs in a tab group
-- **Remember last prompt** — Restores your last prompt when you reopen the extension
-
-## File Reference
-
-The "Files to attach" field is a reminder for yourself. Since the extension cannot automatically upload files, use this field to note which files you need to manually attach in each chat.
-
-## Troubleshooting
-
-### Extension icon not visible
-Click the puzzle piece icon in Chrome's toolbar and pin the Dual AI Launcher extension.
-
-### Tabs open to login page
-Make sure you're logged into both Claude.ai and Gemini in your browser before using the extension.
-
-### Wrong Google account for Gemini
-The account is determined by the URL when you add a gem. If you need a different account:
-1. Log into the correct Google account in Chrome
-2. Open Gemini with that account
-3. Delete the old gem configuration
-4. Add it again with the new URL
-
-### Model selection shows warning
-This is expected behavior when the UI has changed. The extension will show "⚠ select model manually" but still works. Just select the model yourself in the chat.
-
-### Model selection never completes
-The extension waits up to 8 seconds for the page to load. On slow connections, this might timeout. The chat still opens and works.
-
-### Prompt not copying
-Make sure you've granted clipboard permissions. Try clicking the Launch button again.
-
-## Privacy & Security
-
-- **No data collection** — The extension stores settings locally only
-- **No network requests** — The extension makes no external API calls
-- **No content injection** — The extension does not read or modify web pages
-- **Minimal permissions** — Only storage, clipboard, and tab creation
-
-## Development
-
-See `DEVELOPMENT_SPEC.md` for technical documentation.
-
-### File Structure
+## 🏗️ Project Structure
 
 ```
-dual-ai-launcher/
-├── manifest.json           # Extension manifest
+hechocha/
+├── manifest.json           # Chrome extension manifest (v3)
 ├── popup/
-│   ├── popup.html          # UI markup
+│   ├── popup.html          # Extension popup UI
 │   ├── popup.css           # Styles
-│   └── popup.js            # Logic
+│   └── popup.js            # Popup logic
 ├── background/
-│   └── service-worker.js   # Tab management
+│   └── service-worker.js   # Tab management & orchestration
 ├── content/
-│   ├── claude-model-selector.js   # Claude model selection
-│   └── gemini-model-selector.js   # Gemini model selection
+│   ├── claude-model-selector.js   # Claude DOM interaction
+│   └── gemini-model-selector.js   # Gemini DOM interaction
 ├── lib/
 │   ├── storage.js          # Chrome storage wrapper
-│   └── url-builder.js      # URL utilities
-├── assets/
-│   └── icon-*.png          # Extension icons
-└── README.md               # This file
+│   └── url-builder.js      # URL construction utilities
+└── assets/
+    └── icon-*.png          # Extension icons
 ```
 
-## Version History
+---
 
-### v1.1.0
-- **Model auto-selection** — Extension attempts to select chosen model in each chat
-- Graceful degradation — Model selection failures show warning but don't break functionality
-- Content scripts for Claude and Gemini DOM interaction
+## 🤝 Contributing
 
-### v1.0.0
-- Initial release
-- Claude and Gemini support
-- Project/Gem configuration
-- Model selection (display only)
-- Tab grouping
-- Preferences
+Contributions are welcome! Whether it's bug fixes, new features, or documentation improvements.
 
-## License
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
-MIT License — Use freely, modify as needed.
+Please read our [Contributing Guide](CONTRIBUTING.md) and [Code of Conduct](CODE_OF_CONDUCT.md) first.
+
+---
+
+## 🐛 Troubleshooting
+
+<details>
+<summary><strong>Extension icon not visible</strong></summary>
+
+Click the puzzle piece icon in Chrome's toolbar and pin Hechocha.
+</details>
+
+<details>
+<summary><strong>Tabs open to login page</strong></summary>
+
+Make sure you're logged into Claude.ai and Gemini in your browser before using the extension.
+</details>
+
+<details>
+<summary><strong>Wrong Google account for Gemini</strong></summary>
+
+The account is determined by the URL when you add a gem. Delete the old gem and re-add it while logged into the correct account.
+</details>
+
+<details>
+<summary><strong>Model selection shows warning</strong></summary>
+
+This happens when AI interfaces update their DOM structure. The extension still works — just select the model manually.
+</details>
+
+<details>
+<summary><strong>Prompt not copying</strong></summary>
+
+Ensure you've granted clipboard permissions. Try clicking Launch again.
+</details>
+
+---
+
+## 📄 License
+
+Apache 2.0 — see [LICENSE](LICENSE) for details.
+
+---
+
+## 🙏 Acknowledgments
+
+Built for the AI-curious who want to get the most out of every prompt.
+
+---
+
+<div align="center">
+
+**[⬆ Back to Top](#-hechocha)**
+
+Made with ☕ by [Ellebam](https://github.com/Ellebam)
+
+</div>
